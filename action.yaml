@@ -1,0 +1,42 @@
+name: Deploy AX-DEV on push
+
+description: 'Update changes in AX'
+
+runs:
+    using: composite
+    steps:
+
+      - name: AX cleanup
+        shell: bash
+        run: rm -rvf ./*
+
+      - name: AX checkout
+        uses: actions/checkout@v3
+
+      - name: AX create .env file
+        shell: bash
+        run: env > .env
+
+      - name: AX prepare yarn cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'yarn'
+
+      - name: AX prepare
+        shell: bash
+        run: echo y | yarn --non-interactive --mutex network install
+
+      - name: AX build
+        shell: bash
+        run: yarn griddo build
+
+      - name: AX upload
+        shell: bash
+        run: aws s3 $GRIDDO_BUCKETS_AWS_ENDPOINT_PARAM sync exports/ax $GRIDDO_AX_BUCKET_URL
+
+      - name: AX notify result
+        shell: bash
+        run: |
+          echo 'finished!!!'
+        if: ${{ always() }}    
