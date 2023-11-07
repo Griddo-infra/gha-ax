@@ -6,10 +6,6 @@ runs:
     using: composite
     steps:
 
-      - name: AX cleanup
-        shell: bash
-        run: rm -rvf ./*
-
       - name: AX checkout
         uses: actions/checkout@v3
 
@@ -26,6 +22,10 @@ runs:
       - name: AX prepare
         shell: bash
         run: echo y | yarn --non-interactive --mutex network install
+
+      - name: AX sync schemas
+        shell: bash
+        run: yarn griddo-sync-schemas
 
       - name: AX build
         shell: bash
