@@ -1,6 +1,6 @@
-name: Deploy AX-DEV on push
+name: Griddo editor
 
-description: 'Update changes in AX'
+description: 'Generate Griddo editor'
 
 runs:
     using: composite
